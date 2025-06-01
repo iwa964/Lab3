@@ -15,7 +15,9 @@ import org.json.JSONArray;
  */
 public class JSONTranslator implements Translator {
 
-    // TODO Task: pick appropriate instance variables for this class
+    private final List<String> countries = new ArrayList<>();
+    private final List<List<String>> languages = new ArrayList<>();
+    private final List<List<String>> translations = new ArrayList<>();
 
     /**
      * Constructs a JSONTranslator using data from the sample.json resources file.
@@ -37,8 +39,23 @@ public class JSONTranslator implements Translator {
 
             JSONArray jsonArray = new JSONArray(jsonString);
 
-            // TODO Task: use the data in the jsonArray to populate your instance variables
-            //            Note: this will likely be one of the most substantial pieces of code you write in this lab.
+            for (int i = 0; i < jsonArray.length(); i++) {
+                var obj = jsonArray.getJSONObject(i);
+                String country = obj.getString("country");
+                JSONArray countryLanguages = obj.getJSONArray("languages");
+                JSONArray translationsArray = obj.getJSONArray("translations");
+
+                List<String> languageList = new ArrayList<>();
+                List<String> translationList = new ArrayList<>();
+
+                for (int j = 0; j < countryLanguages.length(); j++) {
+                    languageList.add(countryLanguages.getString(j));
+                    translationList.add(translationsArray.getString(j));
+                }
+                countries.add(country);
+                languages.add(languageList);
+                translations.add(translationList);
+            }
 
         }
         catch (IOException | URISyntaxException ex) {
@@ -48,21 +65,28 @@ public class JSONTranslator implements Translator {
 
     @Override
     public List<String> getCountryLanguages(String country) {
-        // TODO Task: return an appropriate list of language codes,
-        //            but make sure there is no aliasing to a mutable object
+        int index = countries.indexOf(country);
+        if (index != -1) {
+            return languages.get(index);
+        }
         return new ArrayList<>();
     }
 
     @Override
     public List<String> getCountries() {
-        // TODO Task: return an appropriate list of country codes,
-        //            but make sure there is no aliasing to a mutable object
-        return new ArrayList<>();
+        return new ArrayList<>(countries);
     }
 
     @Override
     public String translate(String country, String language) {
-        // TODO Task: complete this method using your instance variables as needed
+        int countryIndex = countries.indexOf(country);
+        if (countryIndex != -1) {
+            List<String> languageList = languages.get(countryIndex);
+            int languageIndex = languageList.indexOf(language);
+            if (languageIndex != -1) {
+                return translations.get(countryIndex).get(languageIndex);
+            }
+        }
         return null;
     }
 }
