@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -36,13 +37,25 @@ public class CountryCodeConverter {
             List<String> lines = Files.readAllLines(Paths.get(getClass()
                     .getClassLoader().getResource(filename).toURI()));
 
-            for (int i = 1; i < lines.size(); i++) {
-                String[] parts = lines.get(i).split("\t");
-                String country = parts[0].trim();
-                String alpha3 = parts[2].trim();
+            Iterator<String> countries = lines.iterator();
+            if (countries.hasNext()) {
+                countries.next(); // skip header
+            }
+
+            while (countries.hasNext()) {
+                String info = countries.next().trim();
+
+                // Split from the last whitespace to isolate Alpha-3 code
+                int lastSpace = info.lastIndexOf(' ');
+                if (lastSpace == -1) continue;
+
+                String country = info.substring(0, lastSpace).trim();
+                String alpha3 = info.substring(lastSpace + 1).trim();
+
                 codeToCountry.put(alpha3, country);
                 countryToCode.put(country, alpha3);
             }
+
         }
         catch (IOException | URISyntaxException ex) {
             throw new RuntimeException(ex);
