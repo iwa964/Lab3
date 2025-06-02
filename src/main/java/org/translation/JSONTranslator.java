@@ -40,23 +40,24 @@ public class JSONTranslator implements Translator {
             JSONArray jsonArray = new JSONArray(jsonString);
 
             for (int i = 0; i < jsonArray.length(); i++) {
-                var obj = jsonArray.getJSONObject(i);
-                String country = obj.getString("country");
-                JSONArray countryLanguages = obj.getJSONArray("languages");
-                JSONArray translationsArray = obj.getJSONArray("translations");
+                var line = jsonArray.getJSONObject(i);
+                // read alpha3 code
+                String countryCode = line.getString("alpha3");
+                countries.add(countryCode);
 
                 List<String> languageList = new ArrayList<>();
                 List<String> translationList = new ArrayList<>();
 
-                for (int j = 0; j < countryLanguages.length(); j++) {
-                    languageList.add(countryLanguages.getString(j));
-                    translationList.add(translationsArray.getString(j));
+                for (String key : line.keySet()) {
+                    if ("id".equals(key) || "alpha2".equals(key) || "alpha3".equals(key)) {
+                        continue;
+                    }
+                    languageList.add(key);
+                    translationList.add(line.getString(key));
                 }
-                countries.add(country);
                 languages.add(languageList);
                 translations.add(translationList);
             }
-
         }
         catch (IOException | URISyntaxException ex) {
             throw new RuntimeException(ex);
@@ -65,9 +66,10 @@ public class JSONTranslator implements Translator {
 
     @Override
     public List<String> getCountryLanguages(String country) {
-        int index = countries.indexOf(country);
-        if (index != -1) {
-            return languages.get(index);
+        for (int i = 0; i < countries.size(); i++) {
+            if (countries.get(i).equals(country)) {
+                return new ArrayList<>(languages.get(i));
+            }
         }
         return new ArrayList<>();
     }

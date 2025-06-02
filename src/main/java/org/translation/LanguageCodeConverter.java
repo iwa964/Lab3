@@ -20,6 +20,7 @@ public class LanguageCodeConverter {
      * Default constructor which will load the language codes from "language-codes.txt"
      * in the resources folder.
      */
+
     public LanguageCodeConverter() {
         this("language-codes.txt");
     }
@@ -37,18 +38,17 @@ public class LanguageCodeConverter {
 
             Iterator<String> languages = lines.iterator();
             if (languages.hasNext()) {
-                languages.next(); // skip header
+                languages.next();
             }
 
             while (languages.hasNext()) {
                 String line = languages.next().trim();
 
                 // split only on the LAST whitespace to preserve long language names
-                int lastSpace = line.lastIndexOf(' ');
-                if (lastSpace == -1) continue;
+                String[] info = line.split("\\t+");
 
-                String language = line.substring(0, lastSpace).trim();
-                String code = line.substring(lastSpace + 1).trim();
+                String language = info[0];
+                String code = info[1];
 
                 codeToLanguage.put(code, language);
                 languageToCode.put(language, code);

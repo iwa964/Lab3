@@ -25,8 +25,7 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        Translator translator = new JSONTranslator(null);
-        //Translator translator = new InLabByHandTranslator();
+        Translator translator = new JSONTranslator("sample.json");
 
         runProgram(translator);
     }
@@ -38,8 +37,8 @@ public class Main {
      * @param translator the Translator implementation to use in the program
      */
     public static void runProgram(Translator translator) {
-        CountryCodeConverter cc =  new CountryCodeConverter();
-        LanguageCodeConverter lc = new LanguageCodeConverter();
+        org.translation.CountryCodeConverter cc = new CountryCodeConverter();
+        org.translation.LanguageCodeConverter lc = new LanguageCodeConverter();
         while (true) {
             String countryCode = promptForCountry(translator);
             if (QUIT.equals(countryCode)) {
@@ -52,8 +51,8 @@ public class Main {
             String countryName = cc.fromCountryCode(countryCode);
             String languageName = lc.fromLanguageCode(languageCode);
 
-            System.out.println(countryName + " in " + languageName + " is " +
-                    translator.translate(countryCode, languageCode));
+            System.out.println(countryName + " in " + languageName + " is "
+                    + translator.translate(countryCode, languageCode));
             System.out.println("Press enter to continue or quit to exit.");
 
             Scanner s = new Scanner(System.in);
@@ -71,15 +70,15 @@ public class Main {
 
         List<String> countryNames = new ArrayList<>();
         List<String> countryCodes = translator.getCountries();
-        for (String code : countryCodes){
-            countryNames.add(countryCodeConverter.fromCountry(code));
+        for (String code : countryCodes) {
+            countryNames.add(countryCodeConverter.fromCountryCode(code));
         }
         Collections.sort(countryNames);
         for (String name : countryNames) {
             System.out.println(name);
         }
 
-        System.out.println("Select a country from above:");
+        System.out.println("select a country from above:");
         Scanner s = new Scanner(System.in);
         String input = s.nextLine();
 
@@ -88,21 +87,15 @@ public class Main {
         }
 
         return countryCodeConverter.fromCountry(input);
-
-//        System.out.println(countries);
-//
-//        System.out.println("select a country from above:");
-//
-//        Scanner s = new Scanner(System.in);
-//        return s.nextLine();
     }
 
     // Note: CheckStyle is configured so that we don't need javadoc for private methods
     private static String promptForLanguage(Translator translator, String country) {
         LanguageCodeConverter langCodeConverter = new LanguageCodeConverter();
 
-        List<String> langCode = translator.getCountryLanguages(country);
         List<String> langNames = new ArrayList<>();
+        List<String> langCode = translator.getCountryLanguages(country);
+        // country is countrycode here
 
         for (String code : langCode) {
             langNames.add(langCodeConverter.fromLanguageCode(code));
@@ -112,7 +105,7 @@ public class Main {
             System.out.println(name);
         }
 
-        System.out.println("Select a language from above:");
+        System.out.println("select a language from above:");
         Scanner s = new Scanner(System.in);
         String input = s.nextLine();
 
@@ -121,12 +114,5 @@ public class Main {
         }
 
         return langCodeConverter.fromLanguage(input);
-
-//        System.out.println(translator.getCountryLanguages(country));
-//
-//        System.out.println("select a language from above:");
-//
-//        Scanner s = new Scanner(System.in);
-//        return s.nextLine();
     }
 }

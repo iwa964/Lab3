@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * This class provides the service of converting country codes to their names.
  */
@@ -39,28 +38,23 @@ public class CountryCodeConverter {
 
             Iterator<String> countries = lines.iterator();
             if (countries.hasNext()) {
-                countries.next(); // skip header
+                countries.next();
             }
 
             while (countries.hasNext()) {
                 String info = countries.next().trim();
+                String[] codes = info.split("\\t+");
 
-                // Split from the last whitespace to isolate Alpha-3 code
-                int lastSpace = info.lastIndexOf(' ');
-                if (lastSpace == -1) continue;
-
-                String country = info.substring(0, lastSpace).trim();
-                String alpha3 = info.substring(lastSpace + 1).trim();
+                String country = codes[0];
+                String alpha3 = codes[2];
 
                 codeToCountry.put(alpha3, country);
                 countryToCode.put(country, alpha3);
             }
-
         }
         catch (IOException | URISyntaxException ex) {
             throw new RuntimeException(ex);
         }
-
     }
 
     /**
@@ -69,7 +63,8 @@ public class CountryCodeConverter {
      * @return the name of the country corresponding to the code
      */
     public String fromCountryCode(String code) {
-        return codeToCountry.get(code);
+        // code is alpha3
+        return codeToCountry.get(code.toUpperCase());
     }
 
     /**
